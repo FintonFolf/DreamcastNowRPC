@@ -3,23 +3,37 @@ import json
 from pypresence import Presence
 import time
 
-# Set the player username you want to track
-playerUsername = "Your-Dreacast-Now!-username"
+# Set the player username(s) you want to track
+primaryUsername = "Your-Dreacast-Now!-username"
+secondaryUsername = "" # Leave blank if not needed
 
+print("Starting DCNowRPC!")
 
 # Function to fetch player data
-def fetch_player_data(username):
+def fetch_player_data(primaryUsername, secondaryUsername):
     try:
         response = requests.get("http://dreamcast.online/now/api/users.json")
         response.raise_for_status()  # Check if the request was successful
         data = json.loads(response.text)
 
-        # Loop through players to find the one with the specified username
+        # Check for primary username
         for player in data['users']:
-            if player['username'].startswith(username):
+            if player['username'].startswith(primaryUsername):
+                print(f"Found {player['username']} playing {player['current_game_display']}")
                 return player['current_game_display'], player['level']
 
-        # Return 'Not found' if the player is not in the list
+        print(f"Unable to find an online player with the username {primaryUsername}.")
+
+        if secondaryUsername:
+            # If primary username is not found, check for secondary username
+            for player in data['users']:
+                if player['username'].startswith(secondaryUsername):
+                    print(f"Found {player['username']} playing {player['current_game_display']}")
+                    return player['current_game_display'], player['level']
+
+            print(f"Unable to find an online player with the username {secondaryUsername}.")
+
+        # Return 'Not found' if neither primary nor secondary usernames are in the list
         return "Not found", "Not found"
 
     except Exception as e:
@@ -40,7 +54,7 @@ except Exception as e:
 
 # Main loop to update Discord Rich Presence
 while True:
-    game_name, level = fetch_player_data(playerUsername)
+    game_name, level = fetch_player_data(primaryUsername, secondaryUsername)
 
     # Replace spaces with '-', remove colons, periods, exclamation marks, and convert to lowercase
     asset_key = game_name.replace(" ", "-").replace(":", "").replace(".", "").replace("!", "").lower()
@@ -61,7 +75,6 @@ while True:
         else:
             # Update without large_image if asset_key is empty
             RPC.update(details=f"Playing {game_name}", state=f"{level}")
-
 
     # Wait for 15 seconds before updating again
     time.sleep(15)
