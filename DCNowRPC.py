@@ -18,7 +18,7 @@ def fetch_player_data(primaryUsername, secondaryUsername):
 
         # Check for primary username
         for player in data['users']:
-            if player['username'].startswith(primaryUsername):
+            if player['username'] == primaryUsername:
                 print(f"Found {player['username']} playing {player['current_game_display']}")
                 return player['current_game_display'], player['level']
 
@@ -27,7 +27,7 @@ def fetch_player_data(primaryUsername, secondaryUsername):
         if secondaryUsername:
             # If primary username is not found, check for secondary username
             for player in data['users']:
-                if player['username'].startswith(secondaryUsername):
+                if player['username'] == secondaryUsername:
                     print(f"Found {player['username']} playing {player['current_game_display']}")
                     return player['current_game_display'], player['level']
 
