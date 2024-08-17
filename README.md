@@ -3,9 +3,9 @@
 A simple Discord Rich Presence appication for Dreamcast Now!
 
 ## Prerequisites
-- Python 3.x
+- Python 3.8 or later
 - `requests` library for making HTTP requests
-- `pypresence` library for Discord Rich Presence integration`
+- `pypresence` library for Discord Rich Presence integration
 
 ## Installation
 1. Clone the GitHub repository and navigate to the project directory
